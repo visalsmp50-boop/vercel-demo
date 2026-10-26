@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0a12">
+  <title>YakatoScript</title>
+  <style>
+    :root {
+      --bg:#0b0a12; --panel:#14121f; --panel-2:#1a1728;
+      --line:#2d2740; --text:#f8f7ff; --muted:#aaa5bb;
+      --purple:#9b6cff; --purple-light:#c4a7ff; --green:#75f0ad;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      position:relative; isolation:isolate; margin:0;
+      background:var(--bg); color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,
+        BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    a { color:inherit; }
+    #background-video {
+      position:fixed; inset:0; width:100%; height:100%;
+      object-fit:cover; z-index:-2; pointer-events:none; background:#0b0a12;
+    }
+    body::before {
+      content:""; position:fixed; inset:0; z-index:-1;
+      pointer-events:none; background:rgba(8,6,18,.68);
+    }
+    body > *:not(#background-video) { position:relative; z-index:1; }
+    #scroll-progress-track {
+      position:fixed; top:0; left:0; width:100%; height:4px;
+      z-index:10000; background:transparent; pointer-events:none;
+    }
+    #scroll-progress-bar {
+      width:0%; height:100%;
+      background:linear-gradient(90deg,#713cff,#c4a7ff,#48ffb0);
+      box-shadow:0 0 10px rgba(155,108,255,.75);
+      transition:width .08s linear;
+    }
+    .topbar {
+      position:sticky; top:0; z-index:5; backdrop-filter:blur(14px);
+      background:rgba(11,10,18,.78); border-bottom:1px solid var(--line);
+    }
+    .nav {
+      width:min(1120px,92%); margin:auto; min-height:72px;
+      display:flex; align-items:center; justify-content:space-between; gap:18px;
+    }
+    .brand { text-decoration:none; font-weight:850; font-size:22px; letter-spacing:-.6px; }
+    .brand span { color:var(--purple); }
+    .navlinks { display:flex; gap:22px; align-items:center; }
+    .navlinks a { text-decoration:none; color:var(--muted); font-size:14px; }
+    .navlinks a:hover { color:white; }
+    .nav-cta { padding:10px 14px; border:1px solid #58427e; border-radius:9px; color:var(--purple-light)!important; }
+    .hero {
+      padding:76px 18px 52px; text-align:center;
+      background:radial-gradient(ellipse at 50% 0%,rgba(126,77,220,.2),transparent 58%);
+    }
+    .eyebrow {
+      display:inline-flex; align-items:center; gap:8px; color:var(--purple-light);
+      background:rgba(155,108,255,.1); border:1px solid rgba(155,108,255,.28);
+      border-radius:99px; padding:7px 12px; font-size:12px; font-weight:750;
+      letter-spacing:.7px; text-transform:uppercase;
+    }
+    .eyebrow::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--green); }
+    h1 { margin:22px 0 13px; font-size:clamp(36px,6vw,62px); line-height:1.04; letter-spacing:-2px; }
+    h1 span { color:var(--purple); }
+    .hero p { color:var(--muted); max-width:590px; margin:0 auto 28px; line-height:1.7; }
+    .searchbox { width:min(580px,94%); margin:auto; position:relative; }
+    .searchbox input {
+      width:100%; border:1px solid #39314d; background:rgba(21,18,32,.88);
+      color:white; border-radius:12px; padding:16px 18px 16px 46px;
+      font-size:15px; outline:none;
+    }
+    .searchbox input:focus { border-color:var(--purple); box-shadow:0 0 0 3px rgba(155,108,255,.13); }
+    .search-icon { position:absolute; left:16px; top:14px; color:var(--muted); font-size:19px; }
+    .wrap { width:min(1120px,92%); margin:auto; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:16px; margin:16px 0 22px; }
+    .section-head h2 { font-size:24px; margin:0 0 7px; letter-spacing:-.5px; }
+    .section-head p { color:var(--muted); margin:0; font-size:14px; }
+    .count { color:var(--muted); font-size:13px; white-space:nowrap; }
+    .filters { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:22px; }
+    .filter {
+      background:#151220; color:var(--muted); border:1px solid var(--line);
+      border-radius:8px; padding:9px 13px; cursor:pointer; font-size:13px;
+    }
+    .filter.active,.filter:hover { color:white; background:#2a2040; border-color:#7252ad; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+    .card {
+      min-width:0; overflow:hidden; border:1px solid var(--line); border-radius:15px;
+      background:linear-gradient(160deg,rgba(25,22,37,.92),rgba(17,16,26,.92));
+      transition:transform .18s,border-color .18s;
+    }
+    .card:hover { transform:translateY(-3px); border-color:#60468d; }
+    .cover { height:164px; background:#211a31; overflow:hidden; }
+    .cover img { width:100%; height:100%; display:block; object-fit:cover; }
+    .cover-fallback {
+      height:100%; display:grid; place-items:center; color:#c4a7ff; font-size:34px;
+      font-weight:900; background:radial-gradient(circle at 25% 20%,#4c3377,#171320 70%);
+    }
+    .card-body { padding:18px; }
+    .meta { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+    .tag { font-size:11px; font-weight:800; letter-spacing:.5px; color:var(--green); background:#123024; padding:6px 8px; border-radius:6px; }
+    .game { font-size:12px; color:var(--muted); }
+    .card h3 { margin:0 0 8px; font-size:18px; }
+    .card p { color:var(--muted); font-size:13px; line-height:1.6; min-height:42px; margin:0 0 17px; }
+    .copy {
+      position:relative; overflow:hidden; width:100%; padding:13px; color:#fff;
+      background:linear-gradient(90deg,#713cff,#b44cff,#713cff); background-size:200% 100%;
+      border:1px solid #d3b5ff; border-radius:10px; font-size:14px; font-weight:800;
+      cursor:pointer; box-shadow:0 0 8px rgba(155,108,255,.8),0 0 20px rgba(155,108,255,.45);
+      animation:buttonGlow 2s ease-in-out infinite; transition:transform .15s ease,box-shadow .15s ease;
+    }
+    .copy:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 0 12px #c4a7ff,0 0 28px #9b6cff,0 0 45px rgba(155,108,255,.8); }
+    .copy:active { transform:scale(.95); }
+    .copy.clicked { animation:clickFlash .45s ease-out,buttonGlow 2s ease-in-out .45s infinite; }
+    .copy.copied { background:linear-gradient(90deg,#00b878,#48ffb0,#00b878); background-size:200% 100%; border-color:#a4ffda; box-shadow:0 0 12px #48ffb0,0 0 30px rgba(72,255,176,.8); }
+    @keyframes buttonGlow {
+      0%,100% { background-position:0% 50%; box-shadow:0 0 8px rgba(155,108,255,.6),0 0 18px rgba(155,108,255,.3); }
+      50% { background-position:100% 50%; box-shadow:0 0 16px #b58cff,0 0 35px rgba(155,108,255,.8); }
+    }
+    @keyframes clickFlash {
+      0% { filter:brightness(1); box-shadow:0 0 0 0 rgba(196,167,255,.9); }
+      50% { filter:brightness(2); box-shadow:0 0 0 18px rgba(196,167,255,0); }
+      100% { filter:brightness(1); }
+    }
+    .empty { text-align:center; color:var(--muted); padding:40px 10px; }
+    .notice { margin:30px 0 56px; border:1px solid var(--line); border-radius:12px; padding:17px 18px; color:var(--muted); font-size:13px; line-height:1.7; background:rgba(17,16,26,.88); }
+    .notice strong { color:var(--purple-light); }
+    footer { border-top:1px solid var(--line); padding:27px 0; color:var(--muted); font-size:13px; }
+    .footer-inner { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+    #ys-audio-panel {
+      position:fixed; right:18px; bottom:18px; z-index:9999; display:flex; align-items:center;
+      gap:9px; flex-wrap:wrap; max-width:calc(100vw - 28px); padding:10px 12px; color:#f8f7ff;
+      background:rgba(18,14,32,.94); border:1px solid #7252ad; border-radius:14px;
+      box-shadow:0 0 16px rgba(155,108,255,.42); backdrop-filter:blur(12px);
+      font:12px/1.4 system-ui,sans-serif;
+    }
+    #ys-audio-toggle {
+      min-height:42px; padding:10px 13px; border:1px solid #d3b5ff; border-radius:10px;
+      color:#fff; font-weight:800; cursor:pointer; background:linear-gradient(100deg,#713cff,#b44cff,#713cff);
+      background-size:200% 100%; animation:ysAudioGlow 3s ease-in-out infinite;
+    }
+    #ys-audio-toggle[aria-pressed="true"] { background:linear-gradient(100deg,#087f59,#18b879); border-color:#a4ffda; }
+    #ys-audio-volume { width:76px; accent-color:#b58cff; cursor:pointer; }
+    #ys-audio-status { color:#c4a7ff; white-space:nowrap; }
+    @keyframes ysAudioGlow { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+    @media (max-width:850px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:560px) {
+      .nav { min-height:64px; }
+      .navlinks { gap:12px; }
+      .navlinks a { font-size:12px; }
+      .nav-cta { display:none; }
+      .hero { padding-top:58px; }
+      .grid { grid-template-columns:1fr; }
+      .cover { height:190px; }
+      .section-head { align-items:start; flex-direction:column; }
+    }
+    @media (max-width:420px) {
+      #ys-audio-panel { right:10px; bottom:10px; gap:7px; padding:8px; }
+      #ys-audio-toggle { font-size:12px; padding:9px 10px; }
+      #ys-audio-volume { width:58px; }
+    }
+    @media (prefers-reduced-motion:reduce) { #ys-audio-toggle,.copy { animation:none; } }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress-track" aria-hidden="true"><div id="scroll-progress-bar"></div></div>
+
+  <!-- Background video: replace this URL with a direct MP4 URL if it does not play. -->
+  <video id="background-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="https://www.pexels.com/download/video/39872367/" type="video/mp4">
+  </video>
+
+  <header class="topbar">
+    <div class="nav">
+      <a class="brand" href="#"><span>Yakato</span>Script</a>
+      <nav class="navlinks" aria-label="Main navigation">
+        <a href="#">Home</a>
+        <a href="#library">Scripts</a>
+        <a class="nav-cta" href="https://t.me/assassin1782" target="_blank" rel="noopener noreferrer">Group Telegram ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Roblox script</div>
+    <h1>YAKATO <span>SCRIPT</span></h1>
+    <p>NH SLANH REAK SA PENH BSD</p>
+    <div class="searchbox">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input id="search" type="search" placeholder="Search by script name or game..." aria-label="Search scripts">
+    </div>
+  </section>
+
+  <main id="library" class="wrap">
+    <div class="section-head">
+      <div><h2>YAKATO SCRIPT</h2><p>FREE SCRIPT ROBLOX</p></div>
+      <div id="count" class="count">0 scripts</div>
+    </div>
+    <div class="filters" aria-label="Filter scripts">
+      <button class="filter active" type="button" data-filter="all">All scripts</button>
+      <button class="filter" type="button" data-filter="KEY">KEY</button>
+      <button class="filter" type="button" data-filter="NO KEY">NO KEY</button>
+    </div>
+    <div id="script-grid" class="grid"></div>
+    <p id="empty" class="empty" hidden>No scripts match your search.</p>
+    <aside class="notice">
+      <strong>stop</strong>
+      kom slanh ke mnek eng tt tv bro kmas ke nas mean ss ban oy yk
+      script tv lg ber ot tv rk ss sin tv jam yk script tv lg ban vea
+      sby all bro ber min jes slanh zeii teh tv ngob oy bat tv
+    </aside>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span><strong>YakatoScript</strong> — Roblox script</span>
+      <span>merl rk mea hg ey ah nis</span>
+    </div>
+  </footer>
+
+  <div id="ys-audio-panel" aria-label="Background music controls">
+    <button id="ys-audio-toggle" type="button" aria-pressed="false">🎧 បើកភ្លេង 3D</button>
+    <label for="ys-audio-volume">🔊</label>
+    <input id="ys-audio-volume" type="range" min="0" max="100" value="25" aria-label="Music volume">
+    <span id="ys-audio-status" aria-live="polite">ភ្លេងបិទ</span>
+  </div>
+
+  <script>
+    // Edit these entries to add/change scripts you are authorized to share.
+    const scripts = [
+      {
+        title:"Script Steal an egg", game:"Roblox", category:"KEY", description:"AJJANS SCRIPT",
+        image:"https://cdn.imgpile.com/f/Q2VKCBc_lg.webp",
+        code:'loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/359e97f8618e9008afe5f496184ebb7c.lua"))()'
+      },
+      {
+        title:"Script Steal an egg", game:"Roblox", category:"KEY", description:"FYY SCRIPT",
+        image:"https://cdn.imgpile.com/f/ByglgIZ_lg.webp",
+        code:'loadstring(game:HttpGet("https://FyyCommunity.net"))()'
+      },
+      {
+        title:"Script Steal an egg", game:"Roblox", category:"NO KEY", description:"ZEROIN SCRIPT",
+        image:"https://cdn.imgpile.com/f/PBRPcsV_lg.webp",
+        code:'loadstring(game:HttpGet("https://zeroinhub.com/api/script"))()'
+      },
+      {
+        title:"Script Steal an egg", game:"Roblox", category:"NO KEY", description:"MIRANDA SCRIPT",
+        image:"https://cdn.imgpile.com/f/x47WRgI_lg.webp",
+        code:'loadstring(game:HttpGet("https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/kaitunmirage.lua"))()'
+      },
+      {
+        title:"Script Steal an egg", game:"Roblox", category:"NO KEY", description:"VIREX SCRIPT",
+        image:"https://cdn.imgpile.com/f/gezC8vS_lg.webp",
+        code:'loadstring(game:HttpGet("https://cdn.luaprotect.dev/u/8660b0/xHJBurKS5_joYg8N"))()'
+      },
+      {
+        title:"Script Steal an egg", game:"Roblox", category:"KEY", description:"AJJANS SCRIPT",
+        image:"https://cdn.imgpile.com/f/Q2VKCBc_lg.webp",
+        code:'loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/359e97f8618e9008afe5f496184ebb7c.lua"))()'
+      }
+    ];
+
+    const grid = document.getElementById("script-grid");
+    const search = document.getElementById("search");
+    const empty = document.getElementById("empty");
+    const count = document.getElementById("count");
+    let activeFilter = "all";
+
+    function makeCard(script) {
+      const card = document.createElement("article");
+      card.className = "card";
+      const cover = document.createElement("div");
+      cover.className = "cover";
+
+      if (script.image) {
+        const img = document.createElement("img");
+        img.src = script.image;
+        img.alt = script.title;
+        img.loading = "lazy";
+        img.onerror = () => {
+          cover.replaceChildren();
+          const fallback = document.createElement("div");
+          fallback.className = "cover-fallback";
+          fallback.textContent = "YS";
+          cover.appendChild(fallback);
+        };
+        cover.appendChild(img);
+      } else {
+        const fallback = document.createElement("div");
+        fallback.className = "cover-fallback";
+        fallback.textContent = "YS";
+        cover.appendChild(fallback);
+      }
+
+      const body = document.createElement("div");
+      body.className = "card-body";
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = script.category;
+      const game = document.createElement("span");
+      game.className = "game";
+      game.textContent = script.game;
+      meta.append(tag, game);
+
+      const title = document.createElement("h3");
+      title.textContent = script.title;
+      const desc = document.createElement("p");
+      desc.textContent = script.description;
+      const button = document.createElement("button");
+      button.className = "copy";
+      button.type = "button";
+      button.textContent = "Copy Script";
+
+      button.addEventListener("click", async () => {
+        const original = button.textContent;
+        button.classList.remove("clicked");
+        void button.offsetWidth;
+        button.classList.add("clicked");
+        button.classList.remove("copied");
+        try {
+          if (!navigator.clipboard || !window.isSecureContext) {
+            throw new Error("Clipboard API unavailable");
+          }
+          await navigator.clipboard.writeText(script.code);
+          button.textContent = "Copied!";
+          button.classList.add("copied");
+        } catch (error) {
+          const textarea = document.createElement("textarea");
+          textarea.value = script.code;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.select();
+          let copied = false;
+          try { copied = document.execCommand("copy"); } catch (_) {}
+          textarea.remove();
+          button.textContent = copied ? "Copied!" : "Copy blocked — open via HTTPS/localhost";
+          if (copied) button.classList.add("copied");
+        }
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove("copied", "clicked");
+        }, 2200);
+      });
+
+      body.append(meta, title, desc, button);
+      card.append(cover, body);
+      return card;
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const filtered = scripts.filter(script => {
+        const matchesQuery = [script.title,script.game,script.category,script.description]
+          .some(value => value.toLowerCase().includes(query));
+        const matchesFilter = activeFilter === "all" || script.category === activeFilter;
+        return matchesQuery && matchesFilter;
+      });
+      grid.replaceChildren();
+      filtered.forEach(script => grid.appendChild(makeCard(script)));
+      empty.hidden = filtered.length !== 0;
+      count.textContent = `${filtered.length} script${filtered.length === 1 ? "" : "s"}`;
+    }
+
+    search.addEventListener("input", render);
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll(".filter").forEach(item => {
+          item.classList.toggle("active", item === button);
+        });
+        render();
+      });
+    });
+    render();
+  </script>
+
+  <script>
+    // Background music is generated by the browser; no external audio file is needed.
+    (() => {
+      const toggle = document.getElementById("ys-audio-toggle");
+      const volume = document.getElementById("ys-audio-volume");
+      const status = document.getElementById("ys-audio-status");
+      let ctx = null, master = null, timer = null, noteIndex = 0, playing = false;
+      const notes = [110,164.81,220,164.81,130.81,196,261.63,196,98,146.83,196,146.83,123.47,185,246.94,185];
+
+      function playNote() {
+        if (!ctx || !master || !playing) return;
+        const now = ctx.currentTime;
+        const freq = notes[noteIndex % notes.length];
+        const pan = Math.sin(noteIndex * .72) * .82;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(.0001, now);
+        gain.gain.exponentialRampToValueAtTime(.12, now + .08);
+        gain.gain.exponentialRampToValueAtTime(.0001, now + 1.05);
+        if (panner) {
+          panner.pan.setValueAtTime(pan, now);
+          osc.connect(gain); gain.connect(panner); panner.connect(master);
+        } else {
+          osc.connect(gain); gain.connect(master);
+        }
+        osc.start(now); osc.stop(now + 1.08); noteIndex++;
+      }
+
+      function setVolume() {
+        if (master && ctx) master.gain.setTargetAtTime(Number(volume.value) / 100 * .28, ctx.currentTime, .06);
+      }
+      volume.addEventListener("input", setVolume);
+      toggle.addEventListener("click", async () => {
+        try {
+          if (!playing) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) { status.textContent = "Browser មិនគាំទ្រសំឡេង"; return; }
+            if (!ctx) {
+              ctx = new AudioContextClass();
+              master = ctx.createGain();
+              master.gain.value = Number(volume.value) / 100 * .28;
+              master.connect(ctx.destination);
+            }
+            await ctx.resume();
+            playing = true; playNote(); timer = window.setInterval(playNote, 430);
+            toggle.textContent = "🔇 បិទភ្លេង";
+            toggle.setAttribute("aria-pressed", "true");
+            status.textContent = "កំពុងចាក់ • Stereo";
+          } else {
+            playing = false; window.clearInterval(timer); timer = null;
+            if (ctx) await ctx.suspend();
+            toggle.textContent = "🎧 បើកភ្លេង 3D";
+            toggle.setAttribute("aria-pressed", "false");
+            status.textContent = "ភ្លេងបិទ";
+          }
+        } catch (err) { status.textContent = "មិនអាចចាក់ភ្លេងបាន"; }
+      });
+    })();
+  </script>
+
+  <script>
+    // Scroll progress bar
+    (() => {
+      const bar = document.getElementById("scroll-progress-bar");
+      function updateScrollProgress() {
+        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
+        bar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+      }
+      window.addEventListener("scroll", updateScrollProgress, { passive:true });
+      window.addEventListener("resize", updateScrollProgress);
+      updateScrollProgress();
+    })();
+  </script>
+
+  <!-- YAKATO CLICK SOUND: plays a short electronic click for buttons, links, and form controls. -->
+  <script>
+    (() => {
+      let clickAudioContext;
+      let lastClickTime = 0;
+
+      function playClickSound() {
+        try {
+          clickAudioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+          if (clickAudioContext.state === "suspended") clickAudioContext.resume();
+
+          const now = clickAudioContext.currentTime;
+          const oscillator = clickAudioContext.createOscillator();
+          const gain = clickAudioContext.createGain();
+
+          oscillator.type = "sine";
+          oscillator.frequency.setValueAtTime(1000, now);
+          oscillator.frequency.exponentialRampToValueAtTime(650, now + .045);
+          gain.gain.setValueAtTime(.12, now);
+          gain.gain.exponentialRampToValueAtTime(.001, now + .05);
+          oscillator.connect(gain);
+          gain.connect(clickAudioContext.destination);
+          oscillator.start(now);
+          oscillator.stop(now + .05);
+        } catch (error) {
+          console.warn("Click sound unavailable:", error);
+        }
+      }
+
+      document.addEventListener("click", event => {
+        const target = event.target.closest(
+          "button, a, input, select, summary, [role='button']"
+        );
+        if (!target) return;
+        // Prevent an accidental double sound from extremely rapid repeated clicks.
+        const now = performance.now();
+        if (now - lastClickTime < 25) return;
+        lastClickTime = now;
+        playClickSound();
+      });
+    })();
+  </script>
+</body>
+</html>
