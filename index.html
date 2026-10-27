@@ -87,12 +87,34 @@
     }
     .filter.active,.filter:hover { color:white; background:#2a2040; border-color:#7252ad; }
     .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
-    .card {
-      min-width:0; overflow:hidden; border:1px solid var(--line); border-radius:15px;
-      background:linear-gradient(160deg,rgba(25,22,37,.92),rgba(17,16,26,.92));
-      transition:transform .18s,border-color .18s;
+    /* Animated neon border for every script card */
+    @property --ys-neon-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: false;
     }
-    .card:hover { transform:translateY(-3px); border-color:#60468d; }
+    .card {
+      min-width:0;
+      overflow:hidden;
+      position:relative;
+      isolation:isolate;
+      border:1px solid transparent;
+      border-radius:15px;
+      background:
+        linear-gradient(160deg,rgba(25,22,37,.96),rgba(17,16,26,.96)) padding-box,
+        conic-gradient(from var(--ys-neon-angle),#9b6cff,#48ffb0,#38bdf8,#c4a7ff,#48ffb0,#9b6cff) border-box;
+      animation:ysNeonBorderSpin 3.5s linear infinite;
+      box-shadow:0 0 12px rgba(155,108,255,.22),0 0 18px rgba(72,255,176,.10);
+      transition:transform .18s,box-shadow .18s,filter .18s;
+    }
+    .card:hover {
+      transform:translateY(-4px);
+      filter:drop-shadow(0 0 8px rgba(155,108,255,.55));
+      box-shadow:0 0 18px rgba(155,108,255,.45),0 0 28px rgba(72,255,176,.2);
+    }
+    @keyframes ysNeonBorderSpin {
+      to { --ys-neon-angle:360deg; }
+    }
     .cover { height:164px; background:#211a31; overflow:hidden; }
     .cover img { width:100%; height:100%; display:block; object-fit:cover; }
     .cover-fallback {
@@ -106,13 +128,30 @@
     .card h3 { margin:0 0 8px; font-size:18px; }
     .card p { color:var(--muted); font-size:13px; line-height:1.6; min-height:42px; margin:0 0 17px; }
     .copy {
-      position:relative; overflow:hidden; width:100%; padding:13px; color:#fff;
-      background:linear-gradient(90deg,#713cff,#b44cff,#713cff); background-size:200% 100%;
-      border:1px solid #d3b5ff; border-radius:10px; font-size:14px; font-weight:800;
-      cursor:pointer; box-shadow:0 0 8px rgba(155,108,255,.8),0 0 20px rgba(155,108,255,.45);
-      animation:buttonGlow 2s ease-in-out infinite; transition:transform .15s ease,box-shadow .15s ease;
+      position:relative;
+      isolation:isolate;
+      overflow:hidden;
+      width:100%;
+      padding:13px;
+      color:#fff;
+      background:
+        linear-gradient(90deg,#713cff,#b44cff,#713cff) padding-box,
+        conic-gradient(from var(--ys-neon-angle),#9b6cff,#48ffb0,#38bdf8,#c4a7ff,#48ffb0,#9b6cff) border-box;
+      background-size:200% 100%,auto;
+      border:1px solid transparent;
+      border-radius:10px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 0 8px rgba(155,108,255,.8),0 0 20px rgba(155,108,255,.45);
+      animation:buttonGlow 2s ease-in-out infinite,ysNeonBorderSpin 3.5s linear infinite;
+      transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;
     }
-    .copy:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 0 12px #c4a7ff,0 0 28px #9b6cff,0 0 45px rgba(155,108,255,.8); }
+    .copy:hover {
+      transform:translateY(-2px) scale(1.02);
+      filter:brightness(1.12);
+      box-shadow:0 0 12px #c4a7ff,0 0 28px #9b6cff,0 0 45px rgba(155,108,255,.8);
+    }
     .copy:active { transform:scale(.95); }
     .copy.clicked { animation:clickFlash .45s ease-out,buttonGlow 2s ease-in-out .45s infinite; }
     .copy.copied { background:linear-gradient(90deg,#00b878,#48ffb0,#00b878); background-size:200% 100%; border-color:#a4ffda; box-shadow:0 0 12px #48ffb0,0 0 30px rgba(72,255,176,.8); }
@@ -162,7 +201,9 @@
       #ys-audio-toggle { font-size:12px; padding:9px 10px; }
       #ys-audio-volume { width:58px; }
     }
-    @media (prefers-reduced-motion:reduce) { #ys-audio-toggle,.copy { animation:none; } }
+    @media (prefers-reduced-motion:reduce) {
+      .card,.copy,#ys-audio-toggle { animation:none; }
+    }
   </style>
 </head>
 <body>
@@ -549,6 +590,6 @@
         playClickSound();
       });
     })();
-  </script>
+  </script> 
 </body>
 </html>
