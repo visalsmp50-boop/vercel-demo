@@ -15,7 +15,7 @@
     color: white;
     background: #080808;
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-    animation: copyWhiteGlow 10s ease-in-out infinite alternate;
+    animation: copyWhiteGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes copyWhiteGlow {
@@ -257,7 +257,7 @@
     @media (prefers-reduced-motion:reduce) {
       .card,.copy,#ys-audio-toggle { animation:none; }
     }
-  </style>
+  </style> 
 
   <style id="yakato-white-neon-theme">
     :root {
@@ -635,6 +635,29 @@
   }
 </style>
 
+
+<style id="yakato-final-background-fix">
+  /* Background video: keep it in its own visible layer on Safari/iPhone and desktop. */
+  html, body { min-height:100%; background:#05040a !important; }
+  body { position:relative !important; isolation:isolate !important; }
+  #background-video {
+    position:fixed !important; display:block !important;
+    inset:0 !important; width:100vw !important; height:100vh !important;
+    height:100dvh !important; max-width:none !important;
+    object-fit:cover !important; object-position:center center !important;
+    z-index:0 !important; opacity:1 !important; visibility:visible !important;
+    pointer-events:none !important; background:#05040a !important;
+  }
+  body::before {
+    content:"" !important; position:fixed !important; inset:0 !important;
+    z-index:1 !important; pointer-events:none !important;
+    background:linear-gradient(rgba(5,4,12,.12),rgba(5,4,12,.22)),
+      radial-gradient(ellipse at 50% 20%,rgba(112,42,190,.16),transparent 65%) !important;
+  }
+  body > *:not(#background-video) { position:relative; z-index:2; }
+  #yakato-intro { z-index:10000 !important; }
+</style>
+
 </head>
 <body>
 <div id="yakato-intro">
@@ -659,9 +682,9 @@
   <div id="scroll-progress-track" aria-hidden="true"><div id="scroll-progress-bar"></div></div>
 
   <!-- Background video: replace this URL with a direct MP4 URL if it does not play. -->
-  <video id="background-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+<video id="background-video" autoplay muted loop playsinline>
     <source src="background-video.mp4" type="video/mp4">
-  </video>
+</video>
 
   <header class="topbar">
     <div class="nav">
@@ -1168,6 +1191,10 @@ new MutationObserver(addYakatoBeam).observe(yakatoGrid, {
     tryPlayBackground();
   }
   window.addEventListener("pageshow", tryPlayBackground);
+  window.addEventListener("load", tryPlayBackground);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) tryPlayBackground();
+  });
 })();
 </script>
 
