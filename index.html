@@ -73,13 +73,19 @@
         BlinkMacSystemFont,"Segoe UI",sans-serif;
     }
     a { color:inherit; }
+    /* Single, predictable background stacking context */
+    html, body { min-height:100%; background:transparent !important; }
+    body { position:relative; isolation:isolate; background-color:#090612 !important; }
     #background-video {
-      position:fixed; inset:0; width:100%; height:100%;
-      object-fit:cover; z-index:-2; pointer-events:none; background:#0b0a12;
+      position:fixed !important; top:0 !important; left:0 !important;
+      width:100vw !important; height:100vh !important; height:100dvh !important;
+      object-fit:cover !important; object-position:center !important;
+      display:block !important; visibility:visible !important; opacity:1 !important;
+      z-index:-1 !important; pointer-events:none !important;
     }
     body::before {
-      content:""; position:fixed; inset:0; z-index:-1;
-      pointer-events:none; background:rgba(8,6,18,.68);
+      content:""; position:fixed; inset:0; z-index:0;
+      pointer-events:none; background:rgba(8,6,18,.42);
     }
     body > *:not(#background-video) { position:relative; z-index:1; }
     #scroll-progress-track {
@@ -661,72 +667,12 @@
 </style>
 
 
-<style id="yakato-final-background-fix">
-  /* Background video: keep it in its own visible layer on Safari/iPhone and desktop. */
-  html, body { min-height:100%; background:#05040a !important; }
-  body { position:relative !important; isolation:isolate !important; }
-  #background-video {
-    position:fixed !important; display:block !important;
-    inset:0 !important; width:100vw !important; height:100vh !important;
-    height:100dvh !important; max-width:none !important;
-    object-fit:cover !important; object-position:center center !important;
-    z-index:0 !important; opacity:1 !important; visibility:visible !important;
-    pointer-events:none !important; background:#05040a !important;
-  }
-  body::before {
-    content:"" !important; position:fixed !important; inset:0 !important;
-    z-index:1 !important; pointer-events:none !important;
-    background:linear-gradient(rgba(5,4,12,.12),rgba(5,4,12,.22)),
-      radial-gradient(ellipse at 50% 20%,rgba(112,42,190,.16),transparent 65%) !important;
-  }
-  body > *:not(#background-video) { position:relative; z-index:2; }
-  #yakato-intro { z-index:10000 !important; }
-</style>
 
 
-<style id="yakato-background-fallback">
-  html, body {
-    background-color: #090612 !important;
-  }
-  body {
-    background-image:
-      radial-gradient(ellipse at 18% 18%, rgba(105, 48, 170, .42), transparent 42%),
-      radial-gradient(ellipse at 82% 32%, rgba(40, 55, 135, .32), transparent 44%),
-      radial-gradient(ellipse at 52% 92%, rgba(100, 35, 125, .28), transparent 48%),
-      linear-gradient(135deg, #05040b, #10091d, #080b19, #13091c) !important;
-    background-size: 180% 180%, 180% 180%, 180% 180%, 350% 350% !important;
-    animation: yakatoBackgroundDrift 18s ease-in-out infinite alternate !important;
-  }
-  @keyframes yakatoBackgroundDrift {
-    0% { background-position: 0% 20%, 100% 0%, 50% 100%, 0% 50%; }
-    100% { background-position: 100% 80%, 0% 100%, 60% 0%, 100% 50%; }
-  }
-  #background-video {
-    background: transparent !important;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    body { animation: none !important; }
-  }
-</style>
 
-<style id="yakato-background-final-layer">
-  html, body { min-height:100%; background:transparent !important; }
-  body { position:relative !important; isolation:isolate !important; }
-  #background-video {
-    position:fixed !important; inset:0 !important;
-    width:100vw !important; height:100vh !important; height:100dvh !important;
-    max-width:none !important; object-fit:cover !important; object-position:center !important;
-    display:block !important; visibility:visible !important; opacity:1 !important;
-    z-index:-1 !important; pointer-events:none !important; background:#090612 !important;
-  }
-  body::before {
-    content:"" !important; position:fixed !important; inset:0 !important;
-    z-index:0 !important; pointer-events:none !important;
-    background:rgba(5,4,12,.38) !important;
-  }
-  body > *:not(#background-video) { position:relative; z-index:1; }
-  #yakato-intro { z-index:10000 !important; }
-</style>
+
+
+
 </head>
 <body>
 <div id="yakato-intro" aria-label="YAKATO SCRIPT intro">
@@ -766,7 +712,7 @@
   <div id="scroll-progress-track" aria-hidden="true"><div id="scroll-progress-bar"></div></div>
 
   <!-- Background video: replace this URL with a direct MP4 URL if it does not play. -->
-<video id="background-video" autoplay muted loop playsinline preload="auto">
+<video id="background-video" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true">
     <source src="./background-video.mp4" type="video/mp4">
 </video>
 
@@ -1259,12 +1205,16 @@ new MutationObserver(addYakatoBeam).observe(yakatoGrid, {
   bgVideo.muted = true;
   bgVideo.defaultMuted = true;
   bgVideo.playsInline = true;
+  bgVideo.addEventListener("error", function () {
+    console.error("YakatoScript background video failed:", bgVideo.error && bgVideo.error.code, bgVideo.currentSrc);
+  });
 
   const tryPlayBackground = function () {
     const result = bgVideo.play();
     if (result && typeof result.catch === "function") {
       result.catch(function () {
-        /* Some mobile browsers block autoplay; the page remains readable. */
+        /* Autoplay can be blocked until the visitor interacts with the page. */
+        bgVideo.dataset.autoplayBlocked = "true";
       });
     }
   };
@@ -1275,6 +1225,9 @@ new MutationObserver(addYakatoBeam).observe(yakatoGrid, {
     tryPlayBackground();
   }
   window.addEventListener("pageshow", tryPlayBackground);
+  ["touchstart", "click", "keydown"].forEach(function (eventName) {
+    window.addEventListener(eventName, tryPlayBackground, { once: true, passive: true });
+  });
   window.addEventListener("load", tryPlayBackground);
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden) tryPlayBackground();
