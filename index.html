@@ -708,27 +708,25 @@
     body { animation: none !important; }
   }
 </style>
-<script>
-(function () {
-  const video = document.getElementById("background-video");
-  if (!video) return;
 
-  function useFallback() {
-    video.style.display = "none";
+<style id="yakato-background-final-layer">
+  html, body { min-height:100%; background:transparent !important; }
+  body { position:relative !important; isolation:isolate !important; }
+  #background-video {
+    position:fixed !important; inset:0 !important;
+    width:100vw !important; height:100vh !important; height:100dvh !important;
+    max-width:none !important; object-fit:cover !important; object-position:center !important;
+    display:block !important; visibility:visible !important; opacity:1 !important;
+    z-index:-1 !important; pointer-events:none !important; background:#090612 !important;
   }
-
-  video.addEventListener("error", useFallback);
-  video.addEventListener("loadeddata", function () {
-    video.style.display = "block";
-  });
-
-  // A missing local MP4 or a browser that cannot load it should reveal the CSS background.
-  window.setTimeout(function () {
-    if (video.readyState < 2) useFallback();
-  }, 1800);
-})();
-</script>
-
+  body::before {
+    content:"" !important; position:fixed !important; inset:0 !important;
+    z-index:0 !important; pointer-events:none !important;
+    background:rgba(5,4,12,.38) !important;
+  }
+  body > *:not(#background-video) { position:relative; z-index:1; }
+  #yakato-intro { z-index:10000 !important; }
+</style>
 </head>
 <body>
 <div id="yakato-intro" aria-label="YAKATO SCRIPT intro">
