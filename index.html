@@ -396,6 +396,31 @@
     a:hover { color:#ffffff !important; }
   </style>
 <style>
+
+/* Inline SVG intro logo (no external video file required). */
+#yakato-intro .intro-logo { width: min(94vw, 1100px); }
+#yakato-intro svg { display: block; width: 100%; height: auto; overflow: visible; }
+#yakato-intro .intro-title {
+  font-family: "Kaushan Script", "Brush Script MT", cursive !important;
+  font-size: 105px;
+  font-weight: 400 !important;
+  fill: #f8f8f8;
+  filter: url(#yakatoIntroGlow);
+  animation: yakatoIntroPulse 1s ease-in-out 2.5s 1;
+}
+@keyframes yakatoIntroWrite { to { clip-path: inset(0 0 0 0); } }
+@keyframes yakatoIntroPulse {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px white) drop-shadow(0 0 25px #eee); }
+  50% { opacity: .3; filter: drop-shadow(0 0 3px white); }
+}
+@media (max-width: 600px) {
+  #yakato-intro .intro-logo { width: 96vw; }
+  #yakato-intro .intro-title { font-size: 112px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #yakato-intro .intro-title { animation: none; }
+}
+
 /* Intro logo animation: use the supplied handwritten YAKATO SCRIPT clip. */
 #yakato-intro {
   position: fixed !important; inset: 0; z-index: 999999999 !important;
@@ -660,22 +685,37 @@
 
 </head>
 <body>
-<div id="yakato-intro">
-  <video class="logo-video" autoplay muted loop playsinline preload="auto" aria-label="YAKATO SCRIPT animated logo">
-    <source src="yakato-logo-animation.mp4" type="video/mp4">
-  </video>
+<div id="yakato-intro" aria-label="YAKATO SCRIPT intro">
+  <div class="logo intro-logo">
+    <svg viewBox="0 0 1100 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="YAKATO SCRIPT">
+      <defs>
+        <filter id="yakatoIntroGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <mask id="yakatoIntroReveal" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="300">
+          <rect x="0" y="0" width="0" height="300" fill="white">
+            <animate attributeName="width" from="0" to="1100" dur="2.5s" fill="freeze"/>
+          </rect>
+        </mask>
+      </defs>
+      <text class="intro-title" x="550" y="175" text-anchor="middle"
+            textLength="900" lengthAdjust="spacingAndGlyphs"
+            mask="url(#yakatoIntroReveal)">YAKATO SCRIPT</text>
+    </svg>
+  </div>
 </div>
 <script>
 (function () {
   const intro = document.getElementById("yakato-intro");
-  const logoVideo = intro.querySelector("video");
-  const startLogo = () => { const p = logoVideo.play(); if (p && p.catch) p.catch(() => {}); };
-  startLogo();
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) startLogo(); });
-  setTimeout(function () {
+  if (!intro) return;
+  window.setTimeout(function () {
     intro.classList.add("hide");
-    setTimeout(function () { intro.remove(); }, 850);
-  }, 4350);
+    window.setTimeout(function () { intro.remove(); }, 800);
+  }, 3000);
 })();
 </script>
 
