@@ -683,6 +683,52 @@
   #yakato-intro { z-index:10000 !important; }
 </style>
 
+
+<style id="yakato-background-fallback">
+  html, body {
+    background-color: #090612 !important;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse at 18% 18%, rgba(105, 48, 170, .42), transparent 42%),
+      radial-gradient(ellipse at 82% 32%, rgba(40, 55, 135, .32), transparent 44%),
+      radial-gradient(ellipse at 52% 92%, rgba(100, 35, 125, .28), transparent 48%),
+      linear-gradient(135deg, #05040b, #10091d, #080b19, #13091c) !important;
+    background-size: 180% 180%, 180% 180%, 180% 180%, 350% 350% !important;
+    animation: yakatoBackgroundDrift 18s ease-in-out infinite alternate !important;
+  }
+  @keyframes yakatoBackgroundDrift {
+    0% { background-position: 0% 20%, 100% 0%, 50% 100%, 0% 50%; }
+    100% { background-position: 100% 80%, 0% 100%, 60% 0%, 100% 50%; }
+  }
+  #background-video {
+    background: transparent !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body { animation: none !important; }
+  }
+</style>
+<script>
+(function () {
+  const video = document.getElementById("background-video");
+  if (!video) return;
+
+  function useFallback() {
+    video.style.display = "none";
+  }
+
+  video.addEventListener("error", useFallback);
+  video.addEventListener("loadeddata", function () {
+    video.style.display = "block";
+  });
+
+  // A missing local MP4 or a browser that cannot load it should reveal the CSS background.
+  window.setTimeout(function () {
+    if (video.readyState < 2) useFallback();
+  }, 1800);
+})();
+</script>
+
 </head>
 <body>
 <div id="yakato-intro" aria-label="YAKATO SCRIPT intro">
