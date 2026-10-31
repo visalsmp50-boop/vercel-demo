@@ -6,10 +6,63 @@
   <meta name="theme-color" content="#0b0a12">
   <title>YakatoScript</title>
   <style>
+    /* COPY SCRIPT - WHITE RUNNING LIGHT */
+.copy-btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: white;
+    background: #080808;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    animation: copyWhiteGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes copyWhiteGlow {
+    0% {
+        box-shadow:
+            0 0 3px white,
+            0 0 6px rgba(255,255,255,0.5);
+    }
+
+    100% {
+        box-shadow:
+            0 0 12px white,
+            0 0 25px rgba(255,255,255,0.8);
+    }
+}
+ /* YAKATO SCRIPT WHITE LIGHT */
+.yakato-light {
+    color: white;
+    background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #777777 50%,
+        #ffffff 100%
+    );
+
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    filter: drop-shadow(0 0 5px white);
+    animation: yakatoWhiteLight 2s ease-in-out infinite alternate;
+}
+
+@keyframes yakatoWhiteLight {
+    from {
+        background-position: 200% center;
+    }
+
+    to {
+        background-position: -100% center;
+    }
+}
     :root {
       --bg:#0b0a12; --panel:#14121f; --panel-2:#1a1728;
       --line:#2d2740; --text:#f8f7ff; --muted:#aaa5bb;
-      --purple:#9b6cff; --purple-light:#c4a7ff; --green:#75f0ad;
+      --purple:hsl(264, 45%, 98%); --purple-light:hsl(240, 100%, 100%); --green:#75f0ad;
     }
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; }
@@ -35,8 +88,8 @@
     }
     #scroll-progress-bar {
       width:0%; height:100%;
-      background:linear-gradient(90deg,#713cff,#c4a7ff,#48ffb0);
-      box-shadow:0 0 10px rgba(155,108,255,.75);
+      background:linear-gradient(90deg,hsl(240, 6%, 97%),hsl(0, 0%, 99%),#48ffb0);
+      box-shadow:0 0 10px #ffffffbf;
       transition:width .08s linear;
     }
     .topbar {
@@ -52,7 +105,7 @@
     .navlinks { display:flex; gap:22px; align-items:center; }
     .navlinks a { text-decoration:none; color:var(--muted); font-size:14px; }
     .navlinks a:hover { color:white; }
-    .nav-cta { padding:10px 14px; border:1px solid #58427e; border-radius:9px; color:var(--purple-light)!important; }
+    .nav-cta { padding:10px 14px; border:1px solid hsl(300, 100%, 100%); border-radius:9px; color:var(--purple-light)!important; }
     .hero {
       padding:76px 18px 52px; text-align:center;
       background:radial-gradient(ellipse at 50% 0%,rgba(126,77,220,.2),transparent 58%);
@@ -102,15 +155,15 @@
       border-radius:15px;
       background:
         linear-gradient(160deg,rgba(25,22,37,.96),rgba(17,16,26,.96)) padding-box,
-        conic-gradient(from var(--ys-neon-angle),#9b6cff,#48ffb0,#38bdf8,#c4a7ff,#48ffb0,#9b6cff) border-box;
+        conic-gradient(from var(--ys-neon-angle),hsl(0, 0%, 98%),#48ffb0,#38bdf8,#c4a7ff,#48ffb0,hsl(240, 5%, 96%)) border-box;
       animation:ysNeonBorderSpin 3.5s linear infinite;
       box-shadow:0 0 12px rgba(155,108,255,.22),0 0 18px rgba(72,255,176,.10);
       transition:transform .18s,box-shadow .18s,filter .18s;
     }
     .card:hover {
       transform:translateY(-4px);
-      filter:drop-shadow(0 0 8px rgba(155,108,255,.55));
-      box-shadow:0 0 18px rgba(155,108,255,.45),0 0 28px rgba(72,255,176,.2);
+      filter:drop-shadow(0 0 8px #f8f8f88c);
+      box-shadow:0 0 18px #fcfcfc73,0 0 28px rgba(72,255,176,.2);
     }
     @keyframes ysNeonBorderSpin {
       to { --ys-neon-angle:360deg; }
@@ -135,8 +188,8 @@
       padding:13px;
       color:#fff;
       background:
-        linear-gradient(90deg,#713cff,#b44cff,#713cff) padding-box,
-        conic-gradient(from var(--ys-neon-angle),#9b6cff,#48ffb0,#38bdf8,#c4a7ff,#48ffb0,#9b6cff) border-box;
+        linear-gradient(90deg,hsl(0, 0%, 97%),hsl(270, 11%, 96%),hsl(240, 3%, 94%)) padding-box,
+        conic-gradient(from var(--ys-neon-angle),hsl(0, 0%, 99%),#48ffb0,#38bdf8,hsl(240, 100%, 100%),#48ffb0,hsl(0, 0%, 100%)) border-box;
       background-size:200% 100%,auto;
       border:1px solid transparent;
       border-radius:10px;
@@ -205,30 +258,275 @@
       .card,.copy,#ys-audio-toggle { animation:none; }
     }
   </style>
+
+  <style id="yakato-white-neon-theme">
+    :root {
+      --bg:#080808;
+      --panel:#111111;
+      --panel-2:#181818;
+      --line:#555555;
+      --text:#ffffff;
+      --muted:#ffffff;
+      --purple:#ffffff;
+      --purple-light:#ffffff;
+      --green:#ffffff;
+    }
+
+    /* All visible text is white. */
+    body, body * {
+      color:#ffffff !important;
+    }
+
+    body {
+      background:#080808 !important;
+    }
+
+    .topbar {
+      background:rgba(8,8,8,.82) !important;
+      border-bottom-color:#777777 !important;
+    }
+
+    .brand span, h1 span, .eyebrow, .section-head p,
+    .count, .game, .card p, .notice, footer,
+    #ys-audio-status {
+      color:#ffffff !important;
+    }
+
+    .eyebrow, .tag {
+      background:rgba(255,255,255,.10) !important;
+      border-color:rgba(255,255,255,.55) !important;
+    }
+
+    .searchbox input {
+      color:#ffffff !important;
+      background:rgba(18,18,18,.94) !important;
+      border-color:#777777 !important;
+    }
+    .searchbox input::placeholder { color:#ffffff !important; opacity:.8; }
+    .searchbox input:focus {
+      border-color:#ffffff !important;
+      box-shadow:0 0 0 3px rgba(255,255,255,.16) !important;
+    }
+
+    .filter {
+      color:#ffffff !important;
+      background:#151515 !important;
+      border-color:#666666 !important;
+    }
+    .filter.active, .filter:hover {
+      color:#ffffff !important;
+      background:#303030 !important;
+      border-color:#ffffff !important;
+    }
+
+    /* White animated neon running around every script card. */
+    .card {
+      background:
+        linear-gradient(160deg,rgba(25,25,25,.98),rgba(10,10,10,.98)) padding-box,
+        conic-gradient(from var(--ys-neon-angle),
+          #ffffff,#777777,#ffffff,#bdbdbd,#ffffff,#555555,#ffffff) border-box !important;
+      box-shadow:0 0 12px rgba(255,255,255,.24),0 0 20px rgba(255,255,255,.12) !important;
+    }
+    .card:hover {
+      filter:drop-shadow(0 0 9px rgba(255,255,255,.65)) !important;
+      box-shadow:0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.20) !important;
+    }
+
+    /* Copy Script: dark center, white text, and a moving white neon border. */
+    .copy {
+      color:#ffffff !important;
+      background:
+        linear-gradient(90deg,#101010,#292929,#101010) padding-box,
+        conic-gradient(from var(--ys-neon-angle),
+          #ffffff,#777777,#ffffff,#cfcfcf,#ffffff,#555555,#ffffff) border-box !important;
+      background-size:200% 100%,auto !important;
+      border:1px solid transparent !important;
+      box-shadow:0 0 9px rgba(255,255,255,.55),0 0 20px rgba(255,255,255,.25) !important;
+    }
+    .copy:hover {
+      color:#ffffff !important;
+      filter:brightness(1.35) !important;
+      box-shadow:0 0 14px #ffffff,0 0 28px rgba(255,255,255,.65) !important;
+    }
+    .copy.copied {
+      color:#ffffff !important;
+      background:
+        linear-gradient(90deg,#222222,#555555,#222222) padding-box,
+        conic-gradient(from var(--ys-neon-angle),#ffffff,#777777,#ffffff) border-box !important;
+      border-color:#ffffff !important;
+      box-shadow:0 0 12px rgba(255,255,255,.8),0 0 28px rgba(255,255,255,.45) !important;
+    }
+
+    .notice {
+      color:#ffffff !important;
+      background:rgba(17,17,17,.92) !important;
+      border-color:#666666 !important;
+    }
+    .notice strong { color:#ffffff !important; }
+    footer { border-top-color:#666666 !important; }
+
+    #ys-audio-panel {
+      color:#ffffff !important;
+      background:rgba(18,18,18,.96) !important;
+      border-color:#888888 !important;
+      box-shadow:0 0 16px rgba(255,255,255,.30) !important;
+    }
+    #ys-audio-toggle {
+      color:#ffffff !important;
+      background:linear-gradient(100deg,#181818,#555555,#181818) !important;
+      border-color:#ffffff !important;
+      box-shadow:0 0 10px rgba(255,255,255,.35) !important;
+    }
+    #ys-audio-toggle[aria-pressed="true"] {
+      color:#ffffff !important;
+      background:linear-gradient(100deg,#222222,#666666) !important;
+      border-color:#ffffff !important;
+    }
+    #ys-audio-volume { accent-color:#ffffff !important; }
+
+    #scroll-progress-bar {
+      background:linear-gradient(90deg,#555555,#ffffff,#aaaaaa) !important;
+      box-shadow:0 0 10px rgba(255,255,255,.7) !important;
+    }
+    .cover { background:#202020 !important; }
+    .cover-fallback {
+      color:#ffffff !important;
+      background:radial-gradient(circle at 25% 20%,#555555,#111111 70%) !important;
+    }
+    a:hover { color:#ffffff !important; }
+  </style>
+<style>
+#yakato-intro {
+  position: fixed !important;
+  inset: 0;
+  z-index: 999999999 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #030303;
+}
+
+#yakato-intro .logo {
+  width: min(94vw, 1100px);
+}
+
+#yakato-intro svg {
+  width: 100%;
+  height: auto;
+}
+
+#yakato-intro .title {
+  font-family: "Kaushan Script", cursive;
+  font-size: 105px;
+  fill: white;
+  filter: url(#yakato-glow);
+  clip-path: inset(0 100% 0 0);
+  animation: yakatoWrite 1s ease forwards;
+}
+
+@keyframes yakatoWrite {
+  to { clip-path: inset(0 0 0 0); }
+}
+</style>
+<style>
+#script-grid .copy {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+#script-grid .copy::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 45%;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.25),
+    #fff,
+    rgba(255,255,255,.25),
+    transparent
+  );
+  transform: translateX(-160%) skewX(-25deg);
+  animation: yakatoLightMove 1.4s linear infinite !important;
+  pointer-events: none;
+  z-index: 10;
+  mix-blend-mode: screen;
+}
+
+@keyframes yakatoLightMove {
+  from { transform: translateX(-160%) skewX(-25deg); }
+  to { transform: translateX(350%) skewX(-25deg); }
+}
+</style>
 </head>
 <body>
+<div id="yakato-intro">
+  <div class="logo">
+    <svg viewBox="0 0 1100 300"
+         xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="yakato-glow"
+                x="-50%" y="-50%"
+                width="200%" height="200%">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <text class="title"
+            x="550" y="160"
+            text-anchor="middle"
+            textLength="900"
+            lengthAdjust="spacingAndGlyphs">
+        YAKATO SCRIPT
+      </text>
+    </svg>
+  </div>
+</div>
+<script>
+(function () {
+  const intro = document.getElementById("yakato-intro");
+
+  setTimeout(function () {
+    intro.classList.add("hide");
+
+    setTimeout(function () {
+      intro.remove();
+    }, 850);
+
+  }, 3000);
+})();
+</script>
+
   <div id="scroll-progress-track" aria-hidden="true"><div id="scroll-progress-bar"></div></div>
 
   <!-- Background video: replace this URL with a direct MP4 URL if it does not play. -->
-  <video id="background-video" autoplay muted loop playsinline aria-hidden="true">
-    <source src="https://www.pexels.com/download/video/39872367/" type="video/mp4">
+  <video id="background-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="25696-352026473_medium.mp4" type="video/mp4">
   </video>
 
   <header class="topbar">
     <div class="nav">
-      <a class="brand" href="#"><span>Yakato</span>Script</a>
+      <a class="brand" href="#"><span class="yakato-light">YakatoScript</a>
       <nav class="navlinks" aria-label="Main navigation">
         <a href="https://discord.gg/HtursYMFY">Bypass Key</a>
         <a href="https://t.me/assassin1782">Telegram</a>
-        <a class="nav-cta" href="https://t.me/assassin1782" target="_blank" rel="noopener noreferrer">Group Telegram ↗</a>
+        <a class="nav-cta" href="https://t.me/assassin1782" target="_blank" rel="noopener noreferrer">Group Telegram</a>
       </nav>
     </div>
   </header>
 
   <section class="hero">
     <div class="eyebrow">Roblox script</div>
-    <h1>YAKATO <span>SCRIPT</span></h1>
-    <p>YAKATO SCRIPT FREE</p>
+    <h1 class="yakato-light">YAKATO SCRIPT</h1>
+    <p class="yakato-light">YAKATO SCRIPT FREE</p>
     <div class="searchbox">
       <span class="search-icon" aria-hidden="true">⌕</span>
       <input id="search" type="search" placeholder="Search by script name or game..." aria-label="Search scripts">
@@ -237,7 +535,7 @@
 
   <main id="library" class="wrap">
     <div class="section-head">
-      <div><h2>YAKATO SCRIPT</h2><p>FREE SCRIPT ROBLOX</p></div>
+      <div><h2 class="yakato-light">YAKATO SCRIPT</h2><p class="yakato-light">FREE SCRIPT ROBLOX</p></div>
       <div id="count" class="count">0 scripts</div>
     </div>
     <div class="filters" aria-label="Filter scripts">
@@ -257,17 +555,11 @@
 
   <footer>
     <div class="wrap footer-inner">
-      <span><strong>YakatoScript</strong> — Roblox script</span>
+      <span><strong>YakatoScript</strong> â Roblox script</span>
       <span>nh slanh nek jol mk yk script</span>
     </div>
   </footer>
 
-  <div id="ys-audio-panel" aria-label="Background music controls">
-    <button id="ys-audio-toggle" type="button" aria-pressed="false">🎧 បើកភ្លេង</button>
-    <label for="ys-audio-volume">🔊</label>
-    <input id="ys-audio-volume" type="range" min="0" max="100" value="25" aria-label="Music volume">
-    <span id="ys-audio-status" aria-live="polite">ភ្លេងបិទ</span>
-  </div>
 
   <script>
     // Edit these entries to add/change scripts you are authorized to share.
@@ -545,7 +837,7 @@
           let copied = false;
           try { copied = document.execCommand("copy"); } catch (_) {}
           textarea.remove();
-          button.textContent = copied ? "Copied!" : "Copy blocked — open via HTTPS/localhost";
+          button.textContent = copied ? "Copied!" : "Copy blocked â open via HTTPS/localhost";
           if (copied) button.classList.add("copied");
         }
         setTimeout(() => {
@@ -584,69 +876,6 @@
       });
     });
     render();
-  </script>
-
-  <script>
-    // Background music is generated by the browser; no external audio file is needed.
-    (() => {
-      const toggle = document.getElementById("ys-audio-toggle");
-      const volume = document.getElementById("ys-audio-volume");
-      const status = document.getElementById("ys-audio-status");
-      let ctx = null, master = null, timer = null, noteIndex = 0, playing = false;
-      const notes = [110,164.81,220,164.81,130.81,196,261.63,196,98,146.83,196,146.83,123.47,185,246.94,185];
-
-      function playNote() {
-        if (!ctx || !master || !playing) return;
-        const now = ctx.currentTime;
-        const freq = notes[noteIndex % notes.length];
-        const pan = Math.sin(noteIndex * .72) * .82;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(.0001, now);
-        gain.gain.exponentialRampToValueAtTime(.12, now + .08);
-        gain.gain.exponentialRampToValueAtTime(.0001, now + 1.05);
-        if (panner) {
-          panner.pan.setValueAtTime(pan, now);
-          osc.connect(gain); gain.connect(panner); panner.connect(master);
-        } else {
-          osc.connect(gain); gain.connect(master);
-        }
-        osc.start(now); osc.stop(now + 1.08); noteIndex++;
-      }
-
-      function setVolume() {
-        if (master && ctx) master.gain.setTargetAtTime(Number(volume.value) / 100 * .28, ctx.currentTime, .06);
-      }
-      volume.addEventListener("input", setVolume);
-      toggle.addEventListener("click", async () => {
-        try {
-          if (!playing) {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContextClass) { status.textContent = "Browser មិនគាំទ្រសំឡេង"; return; }
-            if (!ctx) {
-              ctx = new AudioContextClass();
-              master = ctx.createGain();
-              master.gain.value = Number(volume.value) / 100 * .28;
-              master.connect(ctx.destination);
-            }
-            await ctx.resume();
-            playing = true; playNote(); timer = window.setInterval(playNote, 430);
-            toggle.textContent = "🔇 បិទភ្លេង";
-            toggle.setAttribute("aria-pressed", "true");
-            status.textContent = "កំពុងចាក់ • Stereo";
-          } else {
-            playing = false; window.clearInterval(timer); timer = null;
-            if (ctx) await ctx.suspend();
-            toggle.textContent = "🎧 បើកភ្លេង";
-            toggle.setAttribute("aria-pressed", "false");
-            status.textContent = "ភ្លេងបិទ";
-          }
-        } catch (err) { status.textContent = "មិនអាចចាក់ភ្លេងបាន"; }
-      });
-    })();
   </script>
 
   <script>
@@ -705,6 +934,70 @@
         playClickSound();
       });
     })();
-  </script> 
+ 
+  
+window.addEventListener("load", function () {
+  const intro = document.getElementById("yakato-intro");
+
+  if (!intro) return;
+
+  setTimeout(function () {
+    intro.remove();
+  }, 2700);
+});
+</script>
+
+<style>
+#script-grid button.copy {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#script-grid button.copy .yakato-beam {
+  position: absolute;
+  top: -20%;
+  left: -60%;
+  width: 45%;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.3),
+    #fff,
+    rgba(255,255,255,.3),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: yakatoBeam 1.5s linear infinite !important;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes yakatoBeam {
+  from { left: -60%; }
+  to { left: 130%; }
+}
+</style>
+
+<script>
+function addYakatoBeam() {
+  document.querySelectorAll("#script-grid button.copy").forEach(button => {
+    if (!button.querySelector(".yakato-beam")) {
+      const beam = document.createElement("span");
+      beam.className = "yakato-beam";
+      button.appendChild(beam);
+    }
+  });
+}
+
+addYakatoBeam();
+
+const yakatoGrid = document.getElementById("script-grid");
+
+new MutationObserver(addYakatoBeam).observe(yakatoGrid, {
+  childList: true
+});
+</script>
+
 </body>
 </html>
