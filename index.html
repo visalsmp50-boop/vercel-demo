@@ -721,7 +721,11 @@
   video.addEventListener("loadeddata", function () {
     video.style.display = "block";
   });
-  // Keep the CSS background visible behind the video while it loads; hide video only on an actual error.
+
+  // A missing local MP4 or a browser that cannot load it should reveal the CSS background.
+  window.setTimeout(function () {
+    if (video.readyState < 2) useFallback();
+  }, 1800);
 })();
 </script>
 
