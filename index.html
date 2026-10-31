@@ -721,11 +721,7 @@
   video.addEventListener("loadeddata", function () {
     video.style.display = "block";
   });
-
-  // A missing local MP4 or a browser that cannot load it should reveal the CSS background.
-  window.setTimeout(function () {
-    if (video.readyState < 2) useFallback();
-  }, 1800);
+  // Keep the CSS background visible behind the video while it loads; hide video only on an actual error.
 })();
 </script>
 
@@ -768,8 +764,8 @@
   <div id="scroll-progress-track" aria-hidden="true"><div id="scroll-progress-bar"></div></div>
 
   <!-- Background video: replace this URL with a direct MP4 URL if it does not play. -->
-<video id="background-video" autoplay muted loop playsinline>
-    <source src="background-video.mp4" type="video/mp4">
+<video id="background-video" autoplay muted loop playsinline preload="auto">
+    <source src="./background-video.mp4" type="video/mp4">
 </video>
 
   <header class="topbar">
